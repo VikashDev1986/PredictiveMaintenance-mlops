@@ -1,0 +1,23 @@
+{
+  "model_type": "Decision Tree",
+  "best_params": {
+    "model__max_depth": 3,
+    "model__min_samples_leaf": 1,
+    "model__min_samples_split": 2
+  },
+  "cv_roc_auc": NaN,
+  "test_accuracy": 0.6404,
+  "test_precision": 0.6871,
+  "test_recall": 0.7889,
+  "test_f1": 0.7345,
+  "test_roc_auc": 0.6687,
+  "features": [
+    "Engine rpm",
+    "Lub oil pressure",
+    "Fuel pressure",
+    "Coolant pressure",
+    "lub oil temp",
+    "Coolant temp"
+  ],
+  "target": "Engine Condition"
+}

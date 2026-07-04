@@ -1,0 +1,43 @@
+name: MLOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Install notebook execution and core ML dependencies
+        pip install papermill jupyter pandas scikit-learn xgboost huggingface_hub datasets requests Flask joblib
+        # Add other dependencies if needed based on the notebook
+
+    - name: Execute MLOps Notebook
+      run: |
+        papermill PredictiveMaintenance.ipynb output_notebook.ipynb          -k python3
+      env:
+        # Pass Hugging Face token as an environment variable
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        HF_USERNAME: "${{ secrets.HF_USERNAME }}" # Assuming you'd set this too if needed
+
+    # Optional: If your notebook modifies files in the repo (e.g., generates new data files or plots to commit)
+    # - name: Commit and Push changes (if any)
+    #   run: |
+    #     git config user.name github-actions[bot]
+    #     git config user.email github-actions[bot]@users.noreply.github.com
+    #     git add .
+    #     git commit -m "Automated MLOps Pipeline Run [skip ci]" || echo "No changes to commit"
+    #     git push
