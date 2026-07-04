@@ -21,27 +21,20 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # Install all dependencies including the strictly pinned numpy from requirements.txt
         pip install -r enginedata-MLOps/deploy/requirements.txt
-        # Re-install numpy and scikit-learn to ensure binary compatibility,
-        # which often fixes 'numpy.dtype size changed' errors if another package indirectly caused an issue.
         pip install --force-reinstall "numpy==1.26.4" "scikit-learn==1.2.2"
-        # Install additional packages required for the GitHub Actions workflow execution
-        pip install papermill datasets
+        # Added nest-asyncio to prevent the notebook engine loop crash
+        pip install papermill datasets nest-asyncio nbformat nbconvert
 
     - name: Execute MLOps Notebook
       run: |
-        papermill PredictiveMaintenance.ipynb output_notebook.ipynb          -k python3
+        # Inject nest_asyncio directly into the execution run using a clean Python wrapper script
+        python -c "
+        import nest_asyncio
+        nest_asyncio.apply()
+        import papermill as pm
+        pm.execute_notebook('PredictiveMaintenance.ipynb', 'output_notebook.ipynb', kernel_name='python3')
+        "
       env:
-        # Pass Hugging Face token as an environment variable
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        HF_USERNAME: "${{ secrets.HF_USERNAME }}" # Assuming you'd set this too if needed
-
-    # Optional: If your notebook modifies files in the repo (e.g., generates new data files or plots to commit)
-    # - name: Commit and Push changes (if any)
-    #   run: |
-    #     git config user.name github-actions[bot]
-    #     git config user.email github-actions[bot]@users.noreply.github.com
-    #     git add .
-    #     git commit -m "Automated MLOps Pipeline Run [skip ci]" || echo "No changes to commit"
-    #     git push
+        HF_USERNAME: "${{ secrets.HF_USERNAME }}"
