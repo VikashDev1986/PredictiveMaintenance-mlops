@@ -28,7 +28,7 @@ jobs:
 
     - name: Execute MLOps Notebook
       run: |
-        # Inject nest_asyncio directly into the execution run using a clean Python wrapper script
+          # Changed kernel_name from 'python3' to 'python' to match GitHub Actions defaults
         python -c "
         import nest_asyncio
         nest_asyncio.apply()
