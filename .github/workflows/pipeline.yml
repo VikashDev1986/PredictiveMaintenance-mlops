@@ -21,9 +21,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # Install notebook execution and core ML dependencies
-        pip install papermill jupyter pandas scikit-learn xgboost huggingface_hub datasets requests Flask joblib
-        # Add other dependencies if needed based on the notebook
+        # Install all dependencies including the strictly pinned numpy from requirements.txt
+        pip install -r enginedata-MLOps/deploy/requirements.txt
+        # Re-install numpy and scikit-learn to ensure binary compatibility,
+        # which often fixes 'numpy.dtype size changed' errors if another package indirectly caused an issue.
+        pip install --force-reinstall "numpy==1.26.4" "scikit-learn==1.2.2"
+        # Install additional packages required for the GitHub Actions workflow execution
+        pip install papermill datasets
 
     - name: Execute MLOps Notebook
       run: |
