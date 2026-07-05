@@ -37,7 +37,11 @@ jobs:
         pip install pandas numpy scikit-learn xgboost \
                     huggingface_hub datasets \
                     flask joblib requests matplotlib seaborn \
-                    papermill nest-asyncio nbformat nbconvert
+                    papermill nest-asyncio nbformat nbconvert ipykernel
+
+    - name: Register Jupyter kernel
+      run: |
+        python -m ipykernel install --user --name python3 --display-name "Python 3"
 
     - name: Execute MLOps Notebook
       run: |
@@ -56,7 +60,7 @@ jobs:
       run: |
         git config user.name  "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add enginedata-MLOps/ .github/ || true
+        git add enginedata-MLOps/ || true
         if git diff --cached --quiet; then
           echo "No changes to commit."
         else
